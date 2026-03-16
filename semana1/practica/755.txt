@@ -1,0 +1,4 @@
+r=4  w=2  x=1
+7 = 4+2+1 = rwx  (dueño: todo)
+5 = 4+0+1 = r-x  (grupo: leer y ejecutar)
+5 = 4+0+1 = r-x  (otros: leer y ejecutar)
