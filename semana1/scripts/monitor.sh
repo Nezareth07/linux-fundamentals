@@ -40,11 +40,19 @@ alerta() {
     fi
 }
 
+obtener_red() {
+    local interfaz=$(ip route | awk 'NR==1 {print $5}')
+    local ip=$(hostname -I | awk '{print $1}')
+    local conexiones=$(ss -t | grep ESTAB | wc -l)
+    echo "$interfaz $ip $conexiones"
+}
+
 # ── recolectar métricas ────────────────────────────────────
 CPU=$(obtener_cpu)
 read RAM_USADO RAM_TOTAL RAM_PCT <<< $(obtener_ram)
 read DISCO_USADO DISCO_TOTAL DISCO_PCT <<< $(obtener_disco)
 UPTIME=$(uptime -p)
+read NET_INTERFAZ NET_IP NET_CONEXIONES <<< $(obtener_red)
 
 # ── construir reporte ──────────────────────────────────────
 REPORTE="
@@ -60,6 +68,8 @@ REPORTE="
   CPU              ${CPU}%          [$(alerta $CPU $UMBRAL)]
   RAM              ${RAM_USADO}MB / ${RAM_TOTAL}MB (${RAM_PCT}%)    [$(alerta $RAM_PCT $UMBRAL)]
   Disk /           ${DISCO_USADO} / ${DISCO_TOTAL} (${DISCO_PCT}%)    [$(alerta $DISCO_PCT $UMBRAL)]
+  Network          $NET_IP ($NET_INTERFAZ)
+  Connections      $NET_CONEXIONES established
 ============================================
 "
 
